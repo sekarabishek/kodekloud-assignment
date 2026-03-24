@@ -1,0 +1,55 @@
+version: 2
+
+models:
+  - name: stg_customers
+    description: Cleaned customer data from CSV seed
+    columns:
+      - name: customer_id
+        description: Customer identifier
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_orders
+    description: Cleaned order data from CSV seed
+    columns:
+      - name: order_id
+        description: Order identifier
+        tests:
+          - unique
+          - not_null
+      - name: net_usd
+        description: Order amount in USD
+        tests:
+          - not_null
+
+  - name: stg_courses
+    description: Cleaned course catalog from CSV seed
+    columns:
+      - name: course_name
+        description: Course name (natural key)
+        tests:
+          - unique
+          - not_null
+      - name: course_type
+        description: PAID or FREE
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['PAID', 'FREE']
+
+  - name: stg_consumption
+    description: Cleaned October consumption data from CSV seed
+    columns:
+      - name: user_id
+        description: User/customer identifier
+        tests:
+          - not_null
+      - name: course_name
+        description: Course name
+        tests:
+          - not_null
+      - name: minutes_consumed
+        description: Minutes watched
+        tests:
+          - not_null

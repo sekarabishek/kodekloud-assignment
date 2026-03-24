@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+.venv/
+env/
+dbt-venv/
+airflow-venv/
+
+# dbt
+target/
+dbt_packages/
+logs/
+dbt.log
+
+# Airflow
+airflow.db
+airflow-webserver.pid
+airflow.cfg
+unittests.cfg
+webserver_config.py
+.airflowignore
+
+# OS / Editor
+.DS_Store
+.vscode/
+.idea/
+
+# Environment / secrets
+.env
+.env.*
+profiles.yml
+
+# Test / coverage
+.coverage
+pytest_cache/
+htmlcov/
+
+# Generated docs/screenshots
+docs/screenshots/
