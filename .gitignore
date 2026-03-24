@@ -41,4 +41,3 @@ pytest_cache/
 htmlcov/
 
 # Generated docs/screenshots
-docs/screenshots/
