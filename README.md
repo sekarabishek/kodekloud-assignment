@@ -26,11 +26,11 @@ This project implements an automated data platform for KodeKloud's revenue analy
 
 | Metric | October 2022 Value |
 |--------|-------------------|
-| Monthly Recurring Revenue (MRR) | $52,972.73 |
-| Annual Recurring Revenue (ARR) | $635,672.76 |
-| Total Attributed Revenue | $30,119.63 |
-| Paying Customers | 1,329 |
-| ARPU | $39.86 |
+| Monthly Recurring Revenue (MRR) | $52,973.28 |
+| Annual Recurring Revenue (ARR) | $635,679.36 |
+| Total Attributed Revenue | $28,342.92 |
+| Paying Customers | 1,328 |
+| ARPU | $39.89 |
 | Courses with Revenue | 35 |
 | Instructors Earning Royalties | 13 |
 
@@ -225,18 +225,18 @@ Instructor royalty equals 20% of attributed revenue — PASS
 Sample Outputs
 MRR/ARR for October 2022
 Month	MRR	ARR	Total Customers	ARPU
-2022-10-01	$52,972.73	$635,672.76	1,329	$39.86
+2022-10-01	$52,973.28	$635,679.36	1,328	$39.89
 Top 5 Courses by Revenue
 Course	Instructor	Revenue	Students
 DevOps Pre-Requisite Course	Mohan	$4,194.40	307
 Certification Course - Certified Administrator	Mohan	$4,045.13	277
 Learning Linux Basics Course & Labs	Mohan	$3,103.14	214
 Kubernetes for the Absolute Beginners	Mohan	$2,563.43	210
-Certified Kubernetes Security Specialist (CKS)	Vijay	$1,779.43	113
+Certified Kubernetes Security Specialist (CKS)	Vijay	$1,779.98	113
 Instructor Royalty Summary
 Instructor	Total Revenue	Royalties (20%)
 Mohan	$17,867.15	$3,573.43
-Vijay	$3,806.25	$761.18
+Vijay	$3,806.80	$761.29
 Aaron	$2,160.67	$432.07
 Lydia	$1,174.35	$234.89
 Ritin	$640.08	$128.02

@@ -137,7 +137,7 @@ This project follows a layered dbt approach:
 - **Grain:** One row per customer
 - **Materialization:** table
 - **Source:** stg_customers
-- **Row count:** 35,597
+- **Row count:** 35,579
 
 | Column               | Type           | Description                       |
 |----------------------|----------------|-----------------------------------|
@@ -229,7 +229,7 @@ The 86 unclassified orders are business packs, labs, and study group purchases.
 - **Grain:** One row per customer per course per month
 - **Materialization:** table
 - **Source:** fact_consumption joined to fact_order
-- **Row count:** 2,685
+- **Row count:** 2,529
 
 | Column                      | Type           | Description                                       |
 |-----------------------------|----------------|---------------------------------------------------|
@@ -261,7 +261,7 @@ The 86 unclassified orders are business packs, labs, and study group purchases.
 **Validation results:**
 - Attribution percentages sum to 1.0 per customer-month: PASS
 - Attributed revenue matches subscription monthly value: PASS
-- Total attributed revenue for October 2022: $30,312.48
+- Total attributed revenue for October 2022: $28,342.92
 
 ---
 
