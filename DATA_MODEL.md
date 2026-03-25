@@ -133,7 +133,7 @@ This project follows a layered dbt approach:
 | updated_at             | timestamp | Record updated timestamp             |
 
 ### dim_customer
-- **Type:** SCD Type 2 ready (current-state implementation)
+- **Type:** SCD Type 2 (implemented via dbt snapshot)
 - **Grain:** One row per customer
 - **Materialization:** table
 - **Source:** stg_customers

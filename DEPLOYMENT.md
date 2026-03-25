@@ -20,40 +20,39 @@ This document describes the deployment approach for promoting this pipeline from
 
 ### Recommended Pipeline
 
+```
 Developer pushes code
-│
-▼
+        |
+        v
 GitHub Actions triggered
-│
-├── dbt build --target dev (run + test)
-│
-├── If all tests pass:
-│       │
-│       ▼
-│   Merge to main
-│       │
-│       ▼
-│   Deploy to staging
-│       │
-│       ▼
-│   dbt build --target staging
-│       │
-│       ▼
-│   Manual approval
-│       │
-│       ▼
-│   Deploy to prod
-│       │
-│       ▼
-│   dbt build --target prod
-│
-└── If tests fail:
-│
-▼
-Block merge, notify developer
-
-yaml
-Copy code
+        |
+        +-- dbt build --target dev (run + test)
+        |
+        +-- If all tests pass:
+        |       |
+        |       v
+        |   Merge to main
+        |       |
+        |       v
+        |   Deploy to staging
+        |       |
+        |       v
+        |   dbt build --target staging
+        |       |
+        |       v
+        |   Manual approval
+        |       |
+        |       v
+        |   Deploy to prod
+        |       |
+        |       v
+        |   dbt build --target prod
+        |
+        +-- If tests fail:
+                |
+                v
+            Block merge, notify developer
+```
 
 ### GitHub Actions Example
 
@@ -98,11 +97,15 @@ jobs:
                 threads: 4
           PROFILE
       - run: dbt build
-Airflow Orchestration
-DAG Structure
-python
-Run Code
-Copy code
+```
+
+---
+
+## Airflow Orchestration
+
+### DAG Structure
+
+```python
 # dags/kk_pipeline.py
 from airflow import DAG
 from airflow.operators.bash import BashOperator
@@ -138,17 +141,25 @@ with DAG(
     )
 
     seed >> run >> test
-Schedule
-Task  Frequency Time
-dbt seed  Daily (or on new data arrival)  02:00 UTC
-dbt run Daily 02:15 UTC
-dbt test  Daily (after run) 02:30 UTC
-Environment Configuration
-Profile per Environment
+```
+
+### Schedule
+
+| Task | Frequency | Time |
+|------|-----------|------|
+| dbt seed | Daily (or on new data arrival) | 02:00 UTC |
+| dbt run | Daily | 02:15 UTC |
+| dbt test | Daily (after run) | 02:30 UTC |
+
+---
+
+## Environment Configuration
+
+### Profile per Environment
+
 Add multiple targets in ~/.dbt/profiles.yml:
 
-yaml
-Copy code
+```yaml
 kk_assignment:
   target: dev
   outputs:
@@ -181,53 +192,82 @@ kk_assignment:
       dbname: assignment_db
       schema: prod
       threads: 8
+```
+
 Run against a specific environment:
 
-bash
-Copy code
+```bash
 dbt build --target staging
 dbt build --target prod
-Rollback Procedures
-If a dbt run fails in production
-Check logs for the failing model:
-bash
-Copy code
+```
+
+---
+
+## Rollback Procedures
+
+### If a dbt run fails in production
+
+1. Check logs for the failing model:
+
+```bash
 dbt run --select <failed_model> --target prod
-If the failure corrupts a table, re-run with full refresh:
-bash
-Copy code
+```
+
+2. If the failure corrupts a table, re-run with full refresh:
+
+```bash
 dbt run --select <failed_model> --full-refresh --target prod
-If a full rollback is needed, re-run the entire pipeline:
-bash
-Copy code
+```
+
+3. If a full rollback is needed, re-run the entire pipeline:
+
+```bash
 dbt build --full-refresh --target prod
-If a seed data issue is found
-Fix the CSV in the seeds/ folder
-Re-run seeds with full refresh:
-bash
-Copy code
+```
+
+### If a seed data issue is found
+
+1. Fix the CSV in the seeds/ folder
+
+2. Re-run seeds with full refresh:
+
+```bash
 dbt seed --full-refresh --target prod
-Rebuild downstream models:
-bash
-Copy code
+```
+
+3. Rebuild downstream models:
+
+```bash
 dbt run --target prod
-Scaling Considerations
-Current State Production Scale  Recommended Change
-dbt seeds (CSV) Real-time source systems  Fivetran/Airbyte for ingestion
-Local PostgreSQL  Cloud data warehouse  BigQuery or Snowflake
-Full refresh models Millions of rows  Incremental models with merge strategy
-Manual dbt commands Scheduled runs  Airflow DAGs with alerting
-Single schema Multi-environment Separate dev/staging/prod schemas
-No monitoring Pipeline observability  Elementary or dbt Cloud for monitoring
-Monitoring and Alerting
-Recommended Setup
-dbt test failures trigger Slack alerts via Airflow
-Row count anomalies detected by custom dbt tests
-Pipeline duration tracking via Airflow task metrics
-Data freshness checks using dbt source freshness
-Example Freshness Check
-yaml
-Copy code
+```
+
+---
+
+## Scaling Considerations
+
+| Current State | Production Scale | Recommended Change |
+|---------------|------------------|-------------------|
+| dbt seeds (CSV) | Real-time source systems | Fivetran/Airbyte for ingestion |
+| Local PostgreSQL | Cloud data warehouse | BigQuery or Snowflake |
+| Full refresh models | Millions of rows | Incremental models with merge strategy |
+| Manual dbt commands | Scheduled runs | Airflow DAGs with alerting |
+| Single schema | Multi-environment | Separate dev/staging/prod schemas |
+| No monitoring | Pipeline observability | Elementary or dbt Cloud for monitoring |
+
+---
+
+## Monitoring and Alerting
+
+### Recommended Setup
+
+1. **dbt test failures** trigger Slack alerts via Airflow
+2. **Row count anomalies** detected by custom dbt tests
+3. **Pipeline duration tracking** via Airflow task metrics
+4. **Data freshness checks** using dbt source freshness
+
+### Example Freshness Check
+
+```yaml
 # models/staging/sources.yml
 sources:
   - name: raw
@@ -235,8 +275,13 @@ sources:
       warn_after: {count: 24, period: hour}
       error_after: {count: 48, period: hour}
     loaded_at_field: updated_at
-Security
-Database credentials are stored in environment variables, not in code
-~/.dbt/profiles.yml is excluded from version control via .gitignore
-Production credentials should be managed via a secrets manager (AWS Secrets Manager, GCP Secret Manager, or HashiCorp Vault)
-Database users should have least-privilege access per environment EOF
+```
+
+---
+
+## Security
+
+- Database credentials are stored in environment variables, not in code
+- ~/.dbt/profiles.yml is excluded from version control via .gitignore
+- Production credentials should be managed via a secrets manager (AWS Secrets Manager, GCP Secret Manager, or HashiCorp Vault)
+- Database users should have least-privilege access per environment

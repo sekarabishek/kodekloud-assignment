@@ -20,8 +20,6 @@ models:
   kk_assignment:
     staging:
       +materialized: view
-    intermediate:
-      +materialized: view
     marts:
       dimensions:
         +materialized: table
@@ -29,7 +27,3 @@ models:
         +materialized: table
       analytics_views:
         +materialized: view
-
-snapshots:
-  kk_assignment:
-    +target_schema: public

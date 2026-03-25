@@ -1,3 +1,9 @@
+# dbt transformation
 dbt-core==1.11.7
 dbt-postgres==1.10.0
+
+# Database
 psycopg2-binary==2.9.11
+
+# Orchestration
+apache-airflow==2.9.3

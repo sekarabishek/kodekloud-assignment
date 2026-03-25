@@ -8,10 +8,10 @@ This document outlines improvements and features that would be added with more t
 
 ## High Priority
 
-### 1. Full SCD Type 2 for dim_customer
-- Implement using dbt snapshots with `check_cols` or `timestamp` strategy
+### 1. ~~Full SCD Type 2 for dim_customer~~ ✅ DONE
+- Implemented using dbt snapshot with `check_cols` strategy
 - Track historical changes to customer status and total_spent
-- Currently dim_customer has SCD2 columns but only stores current state
+- snap_customer tracks changes to total_spent and first_paid_order_date
 
 ### 2. Incremental Models
 - Convert fact_order, fact_consumption, and fact_revenue_attribution to incremental
