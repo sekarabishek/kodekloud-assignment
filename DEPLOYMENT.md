@@ -103,6 +103,8 @@ jobs:
 
 ## Airflow Orchestration
 
+> **Status:** DAG deployed and tested locally. All 6 tasks executed successfully in sequence.
+
 ### DAG Structure
 
 ```python
@@ -111,8 +113,13 @@ from airflow import DAG
 from airflow.operators.bash import BashOperator
 from datetime import datetime, timedelta
 
+DBT_PROJECT_DIR = "~/kodekloud_assignment"
+DBT_VENV_ACTIVATE = "source ~/data-stack/dbt-venv/bin/activate"
+
 default_args = {
     'owner': 'data-platform',
+    'depends_on_past': False,
+    'email_on_failure': True,
     'retries': 2,
     'retry_delay': timedelta(minutes=5),
 }
@@ -120,36 +127,56 @@ default_args = {
 with DAG(
     'kk_data_pipeline',
     default_args=default_args,
+    description='KodeKloud dbt pipeline: seed, run, test',
     schedule_interval='@daily',
     start_date=datetime(2022, 10, 1),
     catchup=False,
+    tags=['dbt', 'kodekloud', 'data-platform'],
 ) as dag:
 
-    seed = BashOperator(
+    dbt_seed = BashOperator(
         task_id='dbt_seed',
-        bash_command='cd ~/kodekloud_assignment && dbt seed',
+        bash_command=f'{DBT_VENV_ACTIVATE} && cd {DBT_PROJECT_DIR} && dbt seed --full-refresh',
     )
 
-    run = BashOperator(
-        task_id='dbt_run',
-        bash_command='cd ~/kodekloud_assignment && dbt run',
+    dbt_run_staging = BashOperator(
+        task_id='dbt_run_staging',
+        bash_command=f'{DBT_VENV_ACTIVATE} && cd {DBT_PROJECT_DIR} && dbt run --select models/staging',
     )
 
-    test = BashOperator(
+    dbt_run_dimensions = BashOperator(
+        task_id='dbt_run_dimensions',
+        bash_command=f'{DBT_VENV_ACTIVATE} && cd {DBT_PROJECT_DIR} && dbt run --select models/marts/dimensions',
+    )
+
+    dbt_run_facts = BashOperator(
+        task_id='dbt_run_facts',
+        bash_command=f'{DBT_VENV_ACTIVATE} && cd {DBT_PROJECT_DIR} && dbt run --select models/marts/facts',
+    )
+
+    dbt_run_analytics = BashOperator(
+        task_id='dbt_run_analytics',
+        bash_command=f'{DBT_VENV_ACTIVATE} && cd {DBT_PROJECT_DIR} && dbt run --select models/marts/analytics_views',
+    )
+
+    dbt_test = BashOperator(
         task_id='dbt_test',
-        bash_command='cd ~/kodekloud_assignment && dbt test',
+        bash_command=f'{DBT_VENV_ACTIVATE} && cd {DBT_PROJECT_DIR} && dbt test',
     )
 
-    seed >> run >> test
+    dbt_seed >> dbt_run_staging >> dbt_run_dimensions >> dbt_run_facts >> dbt_run_analytics >> dbt_test
 ```
 
 ### Schedule
 
 | Task | Frequency | Time |
 |------|-----------|------|
-| dbt seed | Daily (or on new data arrival) | 02:00 UTC |
-| dbt run | Daily | 02:15 UTC |
-| dbt test | Daily (after run) | 02:30 UTC |
+| dbt_seed | Daily (or on new data arrival) | 02:00 UTC |
+| dbt_run_staging | Daily (after seed) | 02:05 UTC |
+| dbt_run_dimensions | Daily (after staging) | 02:10 UTC |
+| dbt_run_facts | Daily (after dimensions) | 02:15 UTC |
+| dbt_run_analytics | Daily (after facts) | 02:20 UTC |
+| dbt_test | Daily (after analytics) | 02:25 UTC |
 
 ---
 
@@ -250,7 +277,7 @@ dbt run --target prod
 | dbt seeds (CSV) | Real-time source systems | Fivetran/Airbyte for ingestion |
 | Local PostgreSQL | Cloud data warehouse | BigQuery or Snowflake |
 | Full refresh models | Millions of rows | Incremental models with merge strategy |
-| Manual dbt commands | Scheduled runs | Airflow DAGs with alerting |
+| Airflow DAG (deployed locally) | Scheduled runs at scale | Cloud Composer with alerting |
 | Single schema | Multi-environment | Separate dev/staging/prod schemas |
 | No monitoring | Pipeline observability | Elementary or dbt Cloud for monitoring |
 

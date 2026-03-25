@@ -341,7 +341,7 @@ erDiagram
 | Ingestion | dbt seeds (CSV) | Fivetran/Airbyte from source systems |
 | Database | Local PostgreSQL | BigQuery (KodeKloud's preferred) |
 | Models | Full refresh tables | Incremental models with merge strategy |
-| Orchestration | Manual dbt commands | Airflow DAGs with daily schedule |
+| Orchestration | Airflow DAG (deployed and tested) | Airflow DAGs with daily schedule |
 | SCD Type 2 | dbt snapshot (snap_customer) | dbt snapshots with incremental tracking |
 | Testing | 50 dbt tests | dbt tests + Great Expectations + anomaly detection |
 | Monitoring | Manual validation | Elementary or dbt Cloud for observability |

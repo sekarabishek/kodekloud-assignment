@@ -186,9 +186,51 @@ dbt build
 
 Expected output: PASS=69 WARN=0 ERROR=0 SKIP=0 NO-OP=0 TOTAL=69
 
+## 8. Set Up Airflow (Optional — Orchestration)
+
+Create and activate the Airflow virtual environment:
+
+```bash
+cd ~/data-stack
+python3.11 -m venv airflow-venv
+source airflow-venv/bin/activate
+pip install --upgrade pip setuptools wheel
+
+AIRFLOW_VERSION=2.9.3
+PYTHON_VERSION=3.11
+CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints-$${AIRFLOW_VERSION}/constraints-$${PYTHON_VERSION}.txt"
+
+pip install "apache-airflow==$${AIRFLOW_VERSION}" --constraint "$${CONSTRAINT_URL}"
+pip install psycopg2-binary
+
+export AIRFLOW_HOME=~/airflow
+airflow db migrate
+
+airflow users create \
+  --username admin \
+  --firstname Admin \
+  --lastname User \
+  --role Admin \
+  --email admin@example.com \
+  --password admin
+
+mkdir -p ~/airflow/dags
+cp ~/kodekloud_assignment/pipelines/orchestration/dbt_pipeline_dag.py ~/airflow/dags/
+
+source ~/data-stack/airflow-venv/bin/activate
+export AIRFLOW_HOME=~/airflow
+airflow webserver --port 8080
+
+source ~/data-stack/airflow-venv/bin/activate
+export AIRFLOW_HOME=~/airflow
+airflow scheduler
+
+
+
+```
 ---
 
-## 8. Verify the Output
+## 9. Verify the Output
 
 Connect to PostgreSQL and check the results:
 
@@ -216,7 +258,7 @@ select * from public.view_course_revenue_monthly limit 10;
 
 ---
 
-## 9. Troubleshooting
+## 10. Troubleshooting
 
 ### psql command not found
 Add PostgreSQL to PATH:
@@ -238,7 +280,7 @@ This is expected. The dbt_project.yml is already included in the repository. Ski
 
 ---
 
-## 10. Notes
+## 11. Notes
 
 - dbt seeds are used for CSV ingestion because the source data is static files.
 - If dbt init fails in an existing project directory, dbt_project.yml can be created manually (already included in repo).

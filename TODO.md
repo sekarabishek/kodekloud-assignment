@@ -18,10 +18,10 @@ This document outlines improvements and features that would be added with more t
 - Use `merge` strategy with appropriate unique keys
 - Critical for production scale with millions of rows
 
-### 3. Airflow DAG Deployment
-- DAG file exists at `pipelines/orchestration/dbt_pipeline_dag.py`
-- Deploy to Airflow and test end-to-end scheduled execution
-- Add Slack alerting on task failures
+### 3. ~~Airflow DAG Deployment~~ ✅ DONE
+- DAG deployed and tested in local Airflow
+- All 6 tasks executed successfully: seed → staging → dimensions → facts → analytics → test
+- Slack alerting to be added for production
 
 ### 4. Date Dimension
 - Create a proper dim_date table for time-series analysis

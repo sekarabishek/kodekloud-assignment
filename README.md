@@ -342,7 +342,6 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed architecture design and trad
 
 If given more time, I would add:
 
-2. **Airflow DAG** to orchestrate dbt seed, run, and test as a scheduled pipeline
 3. **Customer cohort analysis** for retention tracking
 4. **dbt docs generate** for auto-generated lineage diagrams
 5. **Incremental models** for fact tables to support daily refreshes at scale
